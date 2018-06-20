@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Sudoku</string>
+    <string name="startBtn">Start</string>
+    <string name="loadBtn">Continue</string>
+    <string name="returnBtn">Return</string>
+    <string name="easyLvl">Easy</string>
+    <string name="medLvl">Medium</string>
+    <string name="hardLvl">Hard</string>
+    <string name="level_id">Level %1d</string>
+</resources>
