@@ -6,25 +6,17 @@ class Sudoku(rows: Int, cols: Int) {
     private val boardSize: Int
 
     init {
-        mBoard = Array(rows) { IntArray(cols) }
+        mBoard = Array(rows, { IntArray(cols) })
         boardSize = mBoard!!.size
         boxSize = Math.sqrt(boardSize.toDouble()).toInt()
     }
 
     fun erase() {
         for (i in mBoard!!.indices) {
-            for (j in 0 until mBoard!![0].size) {
+            for (j in 0 .. mBoard!![0].size) {
                 mBoard!![i][j] = 0
             }
         }
-    }
-
-    fun setValue(row: Int, col: Int, value: Any) {
-        mBoard!![row][col] = value as Int
-    }
-
-    fun getValue(row: Int, col: Int): Any {
-        return mBoard!![row][col]
     }
 
     fun rowLength(): Int {
@@ -35,7 +27,40 @@ class Sudoku(rows: Int, cols: Int) {
         return mBoard!!.size
     }
 
-    fun transpose(random: Double) {   // Method allows to transpose the sudoku matrix.
+    fun generate(lvl:Int){ // Sudoku generator
+        val columns: Int = boardSize
+        val rows: Int = boardSize
+        var aRow =  setFirstRow()
+        for (j in 0 until columns){
+            this.setValue(0,j,aRow[j])
+        }
+        for (i in 1 until rows){
+            if (i == 3 || i == 6){
+                aRow = shiftLeft(aRow, 1)
+            }
+            aRow = shiftLeft(aRow, 3)
+            for (j in 0..(columns-1)){
+                setValue(i,j,aRow[j])
+            }
+        }
+        transpose(Math.random())
+        overturn(Math.random())
+        swapRowsArea(40)
+        swapColsArea(40)
+        swapRows(80)
+        swapCols(80)
+        cleanCells(lvl)
+    }
+
+    fun setValue(row: Int, col: Int, value: Any) {
+        mBoard!![row][col] = value as Int
+    }
+
+    fun getValue(row: Int, col: Int): Any {
+        return mBoard!![row][col]
+    }
+
+    private fun transpose(random: Double) {   // Method allows to transpose the sudoku matrix.
         if (random > 0.5) {
             val row = mBoard!!.size
             val col = mBoard!!.size
@@ -49,7 +74,7 @@ class Sudoku(rows: Int, cols: Int) {
         }
     }
 
-    fun overturn(random: Double) {   // Method allows to overturn the sudoku matrix.
+    private fun overturn(random: Double) {   // Method allows to overturn the sudoku matrix.
         if (random > 0.5) {
             val row = mBoard!!.size
             val col = mBoard!!.size
@@ -63,7 +88,7 @@ class Sudoku(rows: Int, cols: Int) {
         }
     }
 
-    fun swapRowsArea(count: Int) {   // Method allows to swap areas in horizontal
+    private fun swapRowsArea(count: Int) {   // Method allows to swap areas in horizontal
         var area1: Int
         var area2: Int
         val outSudoku = mBoard!!.clone()
@@ -76,27 +101,27 @@ class Sudoku(rows: Int, cols: Int) {
             area2 *= 3
             for (row in 0..2) {
                 for (col in mBoard!!.indices) {
-                    val `val` = mBoard!![area1 + row][col]
+                    val value = mBoard!![area1 + row][col]
                     outSudoku[area1 + row][col] = mBoard!![area2 + row][col]
-                    outSudoku[area2 + row][col] = `val`
+                    outSudoku[area2 + row][col] = value
                 }
             }
         }
         mBoard = outSudoku.clone()
     }
 
-    fun swapColsArea(count: Int) {   // Method allows to swap areas in vertical
+    private fun swapColsArea(count: Int) {   // Method allows to swap areas in vertical
         var area1: Int
         var area2: Int
         val outSudoku = mBoard!!.clone()
-        for (step in 0 .. count) {
+        for (step in 0 until count) {
             area1 = (3 * Math.random()).toInt()
             do
                 area2 = (3 * Math.random()).toInt()
             while (area2 == area1)
             area1 *= boxSize
             area2 *= boxSize
-            for (col in 0 .. boxSize) {
+            for (col in 0 until boxSize) {
                 for (row in mBoard!!.indices) {
                     val `val` = mBoard!![row][area1 + col]
                     outSudoku[row][area1 + col] = mBoard!![row][area2 + col]
@@ -107,14 +132,14 @@ class Sudoku(rows: Int, cols: Int) {
         mBoard = outSudoku.clone()
     }
 
-    fun swapCols(count: Int) {   // Method allows to swap columns in one area
+    private fun swapCols(count: Int) {   // Method allows to swap columns in one area
         var area: Int
         var col1: Int
         var col2: Int
         val outSudoku = mBoard!!.clone()
-        for (step in 0 .. count) {
+        for (step in 0 until count) {
             area = (3 * Math.random()).toInt()
-            area = area * boxSize
+            area *= boxSize
             col1 = (3 * Math.random()).toInt() + area
             do {
                 col2 = (3 * Math.random()).toInt() + area
@@ -128,12 +153,12 @@ class Sudoku(rows: Int, cols: Int) {
         mBoard = outSudoku.clone()
     }
 
-    fun swapRows(count: Int) {   // Method allows to swap rows in one area
+    private fun swapRows(count: Int) {   // Method allows to swap rows in one area
         var area: Int
         var row1: Int
         var row2: Int
         val outSudoku = mBoard!!.clone()
-        for (step in 0 .. count) {
+        for (step in 0 until count) {
             area = ((3 * Math.random()).toInt()) * boxSize
             row1 = (3 * Math.random()).toInt() + area
             do {
@@ -148,16 +173,14 @@ class Sudoku(rows: Int, cols: Int) {
         mBoard = outSudoku.clone()
     }
 
-    fun cleanCells(lvl: Int) {        // create well-played game field from the matrix (via random method)
-        val filledCells: Int
+    private fun cleanCells(lvl: Int) {        // create well-played game field from the matrix (via random method)
         var cellValue: IntArray
         var i = Math.pow(boardSize.toDouble(), 2.0).toInt()
-        if (lvl == 0) {
-            filledCells = (4 * Math.random()).toInt() + 31
-        } else if (lvl == 1) {
-            filledCells = (4 * Math.random()).toInt() + 26
-        } else
-            filledCells = (4 * Math.random()).toInt() + 21
+        var filledCells = when (lvl){
+            0 -> (4 * Math.random()).toInt() + 31
+            1 -> (4 * Math.random()).toInt() + 26
+            else -> (4 * Math.random()).toInt() + 21
+        }
         do {
             cellValue = getCellValue()
             mBoard!![cellValue[0]][cellValue[1]] = 0
@@ -167,6 +190,41 @@ class Sudoku(rows: Int, cols: Int) {
                 mBoard!![cellValue[0]][cellValue[1]] = cellValue[2]
             }
         } while (i > filledCells)
+    }
+
+    private fun shiftLeft (inVector:IntArray, shiftCount:Int):IntArray{      //shift the number vector to the left by shiftCount value
+        val outVector = IntArray(inVector.size)
+        for (j in 0 until shiftCount) outVector[j+(inVector.size)-shiftCount] = inVector[j]
+        for (j in 0 until (inVector.size)-shiftCount) outVector[j] = inVector[j+shiftCount]
+        return outVector
+    }
+
+    private fun setFirstRow(): IntArray{        // build first row for matrix via random method
+        var rndNum: Int
+        var position: Int
+        var isUniq = true
+        var i = 0
+        val aVector = IntArray(9)
+        do{
+            rndNum = ((Math.random()*9)+1).toInt()    // random value from 1 to 9 including
+            for (i in aVector.indices) {
+//                var num: Int = i
+                if (rndNum == aVector[i]){
+                    isUniq = false
+                    break
+                }
+            }
+            if (isUniq){
+                do{
+                    position = ((Math.random()*9)).toInt()  // random position in the row
+                }
+                while (aVector[position] != 0)
+                aVector[position] = rndNum
+                i++
+            } else isUniq = true
+        }
+        while (i < aVector.size)
+        return aVector
     }
 
     private fun getCellValue(): IntArray {  // Get value from the random not-null cell
@@ -207,8 +265,8 @@ class Sudoku(rows: Int, cols: Int) {
         for (i in area.indices) {
             area[i] = area[i] * 3
         }
-        for (i in 0..2) {
-            for (j in 0..2) {
+        for (i in 0 .. 2) {
+            for (j in 0 .. 2) {
                 aVal = mBoard!![area[0] + i][area[1] + j]
                 if (aVal == value) {
                     return false

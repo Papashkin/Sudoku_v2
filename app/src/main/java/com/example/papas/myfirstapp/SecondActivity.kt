@@ -8,18 +8,22 @@ import kotlinx.android.synthetic.main.second_activity.*
 
 class SecondActivity : AppCompatActivity() {
 
-    var sudoku: Sudoku = Sudoku(9,9)
-
+    private var sudoku: Sudoku = Sudoku(9,9)
     companion object {
         const val LEVEL_COUNT = "level_count"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        var solvedSudoku: Sudoku = Sudoku(9,9)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.second_activity)
         val level = textLevel()
-//        sudoku.cleanCells(level)
-
+        sudoku.generate(level)
+        for ( i in 0 until sudoku.rowLength()){
+            for (j in 0 until sudoku.columnLength()){
+                solvedSudoku.setValue(i,j,sudoku.getValue(i,j))
+            }
+        }
     }
 
     fun returnClick(view: View){
