@@ -60,7 +60,8 @@ class Sudoku(rows: Int, cols: Int) {
         return mBoard!![row][col]
     }
 
-    private fun transpose(random: Double) {   // Method allows to transpose the sudoku matrix.
+    // Method allows to transpose the sudoku matrix.
+    private fun transpose(random: Double) {
         if (random > 0.5) {
             val row = mBoard!!.size
             val col = mBoard!!.size
@@ -74,7 +75,8 @@ class Sudoku(rows: Int, cols: Int) {
         }
     }
 
-    private fun overturn(random: Double) {   // Method allows to overturn the sudoku matrix.
+    // Method allows to overturn the sudoku matrix.
+    private fun overturn(random: Double) {
         if (random > 0.5) {
             val row = mBoard!!.size
             val col = mBoard!!.size
@@ -88,7 +90,8 @@ class Sudoku(rows: Int, cols: Int) {
         }
     }
 
-    private fun swapRowsArea(count: Int) {   // Method allows to swap areas in horizontal
+    // Method allows to swap areas in horizontal
+    private fun swapRowsArea(count: Int) {
         var area1: Int
         var area2: Int
         val outSudoku = mBoard!!.clone()
@@ -110,7 +113,8 @@ class Sudoku(rows: Int, cols: Int) {
         mBoard = outSudoku.clone()
     }
 
-    private fun swapColsArea(count: Int) {   // Method allows to swap areas in vertical
+    // Method allows to swap areas in vertical
+    private fun swapColsArea(count: Int) {
         var area1: Int
         var area2: Int
         val outSudoku = mBoard!!.clone()
@@ -132,7 +136,8 @@ class Sudoku(rows: Int, cols: Int) {
         mBoard = outSudoku.clone()
     }
 
-    private fun swapCols(count: Int) {   // Method allows to swap columns in one area
+    // Method allows to swap columns in one area
+    private fun swapCols(count: Int) {
         var area: Int
         var col1: Int
         var col2: Int
@@ -153,7 +158,8 @@ class Sudoku(rows: Int, cols: Int) {
         mBoard = outSudoku.clone()
     }
 
-    private fun swapRows(count: Int) {   // Method allows to swap rows in one area
+    // Method allows to swap rows in one area
+    private fun swapRows(count: Int) {
         var area: Int
         var row1: Int
         var row2: Int
@@ -173,12 +179,13 @@ class Sudoku(rows: Int, cols: Int) {
         mBoard = outSudoku.clone()
     }
 
-    private fun cleanCells(lvl: Int) {        // create well-played game field from the matrix (via random method)
+    // create well-played game field from the matrix (via random method)
+    private fun cleanCells(lvl: Int) {
         var cellValue: IntArray
         var i = Math.pow(boardSize.toDouble(), 2.0).toInt()
         var filledCells = when (lvl){
-            0 -> (4 * Math.random()).toInt() + 31
-            1 -> (4 * Math.random()).toInt() + 26
+            0 -> (4 * Math.random()).toInt() + 30
+            1 -> (4 * Math.random()).toInt() + 25
             else -> (4 * Math.random()).toInt() + 21
         }
         do {
@@ -192,14 +199,16 @@ class Sudoku(rows: Int, cols: Int) {
         } while (i > filledCells)
     }
 
-    private fun shiftLeft (inVector:IntArray, shiftCount:Int):IntArray{      //shift the number vector to the left by shiftCount value
+    //shift the number vector to the left by shiftCount value
+    private fun shiftLeft (inVector:IntArray, shiftCount:Int):IntArray{
         val outVector = IntArray(inVector.size)
         for (j in 0 until shiftCount) outVector[j+(inVector.size)-shiftCount] = inVector[j]
         for (j in 0 until (inVector.size)-shiftCount) outVector[j] = inVector[j+shiftCount]
         return outVector
     }
 
-    private fun setFirstRow(): IntArray{        // build first row for matrix via random method
+    // build first row for matrix via random method
+    private fun setFirstRow(): IntArray{
         var rndNum: Int
         var position: Int
         var isUniq = true
@@ -227,7 +236,8 @@ class Sudoku(rows: Int, cols: Int) {
         return aVector
     }
 
-    private fun getCellValue(): IntArray {  // Get value from the random not-null cell
+    // Get value from the random not-null cell
+    private fun getCellValue(): IntArray {
         val cell = IntArray(3)
         var value: Int
         var row: Int
@@ -243,7 +253,8 @@ class Sudoku(rows: Int, cols: Int) {
         return cell
     }
 
-    private fun isUniqueSolve(cell: IntArray): Boolean { // check the solution of the sudoku (must be one solution)
+    // check the solution of the sudoku (must be one solution)
+    private fun isUniqueSolve(cell: IntArray): Boolean {
         var aVal: Int
         val row = cell[0]
         val col = cell[1]

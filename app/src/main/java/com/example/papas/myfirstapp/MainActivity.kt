@@ -7,9 +7,10 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.Toast
 
-class MainActivity : AppCompatActivity() {
 
-    private val levelsList = arrayOf("Простой", "Средний", "Сложный")
+val levelsList = arrayOf("Легкий", "Средний", "Сложный")
+
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
             newGame()
         }
         loadBtn.setOnClickListener{
-            (Toast.makeText(this, "Nothing to load", Toast.LENGTH_SHORT)).show()
+            (Toast.makeText(this, "А нечего загружать :(", Toast.LENGTH_SHORT)).show()
         }
     }
 
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         levelMsg.setView(dialogView)
         levelMsg.setTitle("Уровень сложности")
         levelMsg.setMessage("Выберите уровень сложности:")
-        levelMsg.setNeutralButton(levelsList[0], { // "Простой"
+        levelMsg.setNeutralButton(levelsList[0], { // "Легкий"
             _, _ -> setSecondActivity(0)
         })
         levelMsg.setNegativeButton(levelsList[1], { // "Средний"
