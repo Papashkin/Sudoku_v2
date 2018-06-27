@@ -1,9 +1,8 @@
 <resources>
-    <string name="app_name">Sudoku</string>
+    <string name="app_name">Судоку</string>
     <string name="startBtn">Новая игра</string>
     <string name="loadBtn">Продолжить</string>
     <string name="returnBtn">Назад</string>
-    <string name="level_id">%s уровень</string>
     <string name="one">1</string>
     <string name="two">2</string>
     <string name="three">3</string>
@@ -14,4 +13,5 @@
     <string name="eight">8</string>
     <string name="nine">9</string>
     <string name="none"> </string>
+    <string name="game">Судоку - %s уровень</string>
 </resources>

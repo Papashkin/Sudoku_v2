@@ -1,6 +1,5 @@
 package com.example.papas.myfirstapp
 
-import android.app.ProgressDialog.show
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -8,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TableRow
 import android.widget.TextView
-import android.widget.Toast
 import kotlinx.android.synthetic.main.second_activity.*
 
 class SecondActivity : AppCompatActivity() {
@@ -19,10 +17,11 @@ class SecondActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        var solvedSudoku: Sudoku = Sudoku(9,9)
+        val solvedSudoku = Sudoku(9,9)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.second_activity)
-        val level = textLevel()
+        val level = intent.getIntExtra(LEVEL_COUNT, 0)
+        title = getString(R.string.game, levelsList[level])
         sudoku.generate(level)
         for ( i in 0 until sudoku.rowLength()){
             for (j in 0 until sudoku.columnLength()){
@@ -30,22 +29,26 @@ class SecondActivity : AppCompatActivity() {
             }
         }
         for (i: Int in 0 until sudoku.rowLength()) {
-            var aRow  = TableRow(this)
+            val aRow  = TableRow(this)
             aRow.id = i
-            aRow.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            aRow.setBackgroundColor(Color.WHITE)
+            aRow.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT)
+            aRow.setBackgroundColor(Color.BLACK)
             aRow.textAlignment = View.TEXT_ALIGNMENT_CENTER
 
             for (j: Int in 0 until sudoku.columnLength()) {
-                var aColumn = TextView(this)
-                aColumn.layoutParams = TableRow.LayoutParams(110,121)
-                aColumn.id = j
+                val row = i+1
+                val aColumn = View.inflate(this, R.layout.cell, null) as TextView
+                if (getCellColor(i,j)==0) {
+                    aColumn.setBackgroundResource(R.drawable.sudoku_cell_white)
+                } else {
+                    aColumn.setBackgroundResource(R.drawable.sudoku_cell_blue)
+                }
+                aColumn.id = "$row$j".toInt()
                 aColumn.text = when (sudoku.getValue(i,j)){
                         0 -> " "
                     else -> sudoku.getValue(i,j).toString()
                 }
                 aColumn.textSize = 32f
-                getCellColor(i,j,aColumn)
                 aColumn.setTextColor(Color.BLACK)
                 aColumn.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 aRow.addView(aColumn, j)
@@ -54,14 +57,8 @@ class SecondActivity : AppCompatActivity() {
         }
     }
 
-    private fun textLevel(): Int{
-        val level = intent.getIntExtra(LEVEL_COUNT, 0)
-        level_id.text = getString(R.string.level_id, levelsList[level])
-        return level
-    }
-
-    private fun getCellColor(row: Int, col: Int, cell:TextView){
-        var count = when {
+    private fun getCellColor(row: Int, col: Int):Int{
+        return when {
             (row ==0 && col ==3)||(row ==0 && col ==4)||(row ==0 && col ==5)->0
             (row ==1 && col ==3)||(row ==1 && col ==4)||(row ==1 && col ==5)->0
             (row ==2 && col ==3)||(row ==2 && col ==4)||(row ==2 && col ==5)->0
@@ -79,18 +76,23 @@ class SecondActivity : AppCompatActivity() {
             (row ==8 && col ==3)||(row ==8 && col ==4)||(row ==8 && col ==5)->0
             else -> 1
             }
-        when (count){
-            0 -> cell.setBackgroundResource(R.drawable.sudoku_cell_white)
-            1 -> cell.setBackgroundResource(R.drawable.sudoku_cell_beige)
-        }
     }
 
-    fun checkCell(view: View){
-        when (view.id){
-            1-> (Toast.makeText(this, ("Выбрана первая ячейка"), Toast.LENGTH_SHORT)).show()
-            8 -> (Toast.makeText(this, ("Выбрана восьмая ячейка"), Toast.LENGTH_SHORT)).show()
-            9 -> (Toast.makeText(this, ("Выбрана девятая ячейка"), Toast.LENGTH_SHORT)).show()
-            else -> (Toast.makeText(this, ("Выбран другая ячейка"), Toast.LENGTH_SHORT)).show()
+    private fun checkCellBackground(id: Int):Int{
+        val row = id/10
+        val col = id%10
+        return getCellColor(row-1,col)
+    }
+
+    fun clickCell(view: View){
+        if (!view.isActivated){
+            view.setBackgroundResource(R.drawable.selected_cell)
+            view.isActivated = true
+        }
+        else {
+            if (checkCellBackground(view.id)==0) view.setBackgroundResource(R.drawable.sudoku_cell_white)
+            else view.setBackgroundResource(R.drawable.sudoku_cell_blue)
+            view.isActivated = false
         }
     }
 

@@ -6,14 +6,14 @@ class Sudoku(rows: Int, cols: Int) {
     private val boardSize: Int
 
     init {
-        mBoard = Array(rows, { IntArray(cols) })
+        mBoard = Array(rows) { IntArray(cols) }
         boardSize = mBoard!!.size
         boxSize = Math.sqrt(boardSize.toDouble()).toInt()
     }
 
     fun erase() {
         for (i in mBoard!!.indices) {
-            for (j in 0 .. mBoard!![0].size) {
+            for (j in 0 until mBoard!![0].size) {
                 mBoard!![i][j] = 0
             }
         }

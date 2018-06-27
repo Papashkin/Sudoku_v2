@@ -25,5 +25,4 @@
             android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="284dp"/>
-
 </android.support.constraint.ConstraintLayout>
