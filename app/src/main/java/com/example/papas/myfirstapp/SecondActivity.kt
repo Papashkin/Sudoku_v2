@@ -4,49 +4,46 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import kotlinx.android.synthetic.main.second_activity.*
 
 class SecondActivity : AppCompatActivity() {
 
-    private var sudoku: Sudoku = Sudoku(9,9)
+    private var aSudoku: Sudoku = Sudoku(9,9)
+    private var posSudoku = Sudoku(9,9)
     companion object {
         const val LEVEL_COUNT = "level_count"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val solvedSudoku = Sudoku(9,9)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.second_activity)
         val level = intent.getIntExtra(LEVEL_COUNT, 0)
         title = getString(R.string.game, levelsList[level])
-        sudoku.generate(level)
-        for ( i in 0 until sudoku.rowLength()){
-            for (j in 0 until sudoku.columnLength()){
-                solvedSudoku.setValue(i,j,sudoku.getValue(i,j))
+        aSudoku.generate(level)
+        for ( i in 0 until aSudoku.rowLength()){
+            for (j in 0 until aSudoku.columnLength()){
+                posSudoku.setValue(i,j,aSudoku.getValue(i,j))
             }
         }
-        for (i: Int in 0 until sudoku.rowLength()) {
+        for (i: Int in 0 until aSudoku.rowLength()) {
             val aRow  = TableRow(this)
-            aRow.id = i
             aRow.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT)
-            aRow.setBackgroundColor(Color.BLACK)
-            aRow.textAlignment = View.TEXT_ALIGNMENT_CENTER
-
-            for (j: Int in 0 until sudoku.columnLength()) {
-                val row = i+1
+            for (j: Int in 0 until aSudoku.columnLength()) {
                 val aColumn = View.inflate(this, R.layout.cell, null) as TextView
-                if (getCellColor(i,j)==0) {
-                    aColumn.setBackgroundResource(R.drawable.sudoku_cell_white)
-                } else {
-                    aColumn.setBackgroundResource(R.drawable.sudoku_cell_blue)
-                }
-                aColumn.id = "$row$j".toInt()
-                aColumn.text = when (sudoku.getValue(i,j)){
+                aColumn.id = "$i$j".toInt()
+                aColumn.tag = "$i$j".toInt()
+                if (checkCellBackground(aColumn.id)==0) aColumn.setBackgroundResource(R.drawable.sudoku_cell_white)
+                else aColumn.setBackgroundResource(R.drawable.sudoku_cell_blue)
+                aColumn.text = when (aSudoku.getValue(i,j)){
                         0 -> " "
-                    else -> sudoku.getValue(i,j).toString()
+                    else -> aSudoku.getValue(i,j).toString()
                 }
                 aColumn.textSize = 32f
                 aColumn.setTextColor(Color.BLACK)
@@ -54,50 +51,122 @@ class SecondActivity : AppCompatActivity() {
                 aRow.addView(aColumn, j)
             }
             tableLayout.addView(aRow, i)
+            val aSolve = View.inflate(this, R.layout.solving_values, null) as TextView
+            aSolve.id = (i+1)*100
+            aSolve.text = (i+1).toString()
+            aSolve.textSize = 30f
+            aSolve.textAlignment = View.TEXT_ALIGNMENT_CENTER
+            solvingRow.addView(aSolve, i)
         }
     }
 
-    private fun getCellColor(row: Int, col: Int):Int{
-        return when {
-            (row ==0 && col ==3)||(row ==0 && col ==4)||(row ==0 && col ==5)->0
-            (row ==1 && col ==3)||(row ==1 && col ==4)||(row ==1 && col ==5)->0
-            (row ==2 && col ==3)||(row ==2 && col ==4)||(row ==2 && col ==5)->0
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = MenuInflater(this)
+        inflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
 
-            (row ==3 && col ==0)||(row ==3 && col ==1)||(row ==3 && col ==2)->0
-            (row ==4 && col ==0)||(row ==4 && col ==1)||(row ==4 && col ==2)->0
-            (row ==5 && col ==0)||(row ==5 && col ==1)||(row ==5 && col ==2)->0
-
-            (row ==3 && col ==6)||(row ==3 && col ==7)||(row ==3 && col ==8)->0
-            (row ==4 && col ==6)||(row ==4 && col ==7)||(row ==4 && col ==8)->0
-            (row ==5 && col ==6)||(row ==5 && col ==7)||(row ==5 && col ==8)->0
-
-            (row ==6 && col ==3)||(row ==6 && col ==4)||(row ==6 && col ==5)->0
-            (row ==7 && col ==3)||(row ==7 && col ==4)||(row ==7 && col ==5)->0
-            (row ==8 && col ==3)||(row ==8 && col ==4)||(row ==8 && col ==5)->0
-            else -> 1
+    override fun onOptionsItemSelected(item: MenuItem):Boolean {
+        return when (item.itemId) {
+            R.id.returnBtn -> {
+                returnClick()
+                true
             }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun cellRender(area: IntArray):Int{
+        return when (setOf(area[0],area[1])) {
+            setOf(0,2)->0
+            setOf(1,1)->0
+            setOf(0,0)->0
+            setOf(2,2)->0
+            else -> 1
+        }
+    }
+
+    private fun checkID(id: Int):IntArray{
+        val cell = IntArray(2)
+        cell[0] = (id/10)
+        cell[1] = (id%10)
+        return cell
     }
 
     private fun checkCellBackground(id: Int):Int{
-        val row = id/10
-        val col = id%10
-        return getCellColor(row-1,col)
+        val cell = checkID(id)
+        val area = aSudoku.getAreaIndex(cell[0],cell[1])
+        return cellRender(area)
     }
 
     fun clickCell(view: View){
-        if (!view.isActivated){
-            view.setBackgroundResource(R.drawable.selected_cell)
-            view.isActivated = true
-        }
-        else {
-            if (checkCellBackground(view.id)==0) view.setBackgroundResource(R.drawable.sudoku_cell_white)
-            else view.setBackgroundResource(R.drawable.sudoku_cell_blue)
-            view.isActivated = false
+        val cell = checkID(view.id)
+        if (posSudoku.getValue(cell[0],cell[1])==0) {
+            if (!view.isActivated){
+                clearSelect()
+                repaint()
+                view.setBackgroundResource(R.drawable.selected_cell)
+                possibleValues(view.id)
+            } else {
+                repaintCell(view)
+                repaint()
+            }
+//            possibleValues(view.id)
+            view.isActivated = !view.isActivated
         }
     }
 
-    fun returnClick(view: View){
+    private fun clearSelect() {
+        for (i:Int in 0 until aSudoku.rowLength()){
+            val aRow = tableLayout.getChildAt(i)
+            for (j:Int in 0 until aSudoku.columnLength()){
+                val id = "$i$j".toInt()
+                val aCell = aRow.findViewWithTag<TextView>(id)
+                if (aCell.isActivated) {
+                    repaintCell(aCell)
+                    aCell.isActivated = false
+                }
+            }
+        }
+    }
+
+    private fun repaintCell(view:View){
+        if (checkCellBackground(view.id)==0) view.setBackgroundResource(R.drawable.sudoku_cell_white)
+        else view.setBackgroundResource(R.drawable.sudoku_cell_blue)
+    }
+
+    private fun possibleValues(id:Int){
+        val vec = IntArray(3)
+        val cell = checkID(id)
+        vec[0]=cell[0]
+        vec[1]=cell[1]
+        for (i:Int in 1 .. aSudoku.rowLength()){
+            vec[2]=i
+            if (aSudoku.isUniqueSolve(vec)) {
+                val aView = solvingRow.getChildAt(i-1)
+                aView.setBackgroundColor(Color.CYAN)
+            }
+        }
+    }
+
+    private fun repaint(){
+        for (i:Int in 0 until solvingRow.childCount){
+                val cell = solvingRow.getChildAt(i)
+                cell.setBackgroundColor(Color.WHITE)
+            }
+        }
+
+    private fun returnClick(){
         val toMainScr = Intent(this, MainActivity::class.java)
+        finish()
         startActivity(toMainScr)
+    }
+
+    fun fillCell(view: View){
+
+    }
+
+    fun cleanCell(view: View){
+
     }
 }

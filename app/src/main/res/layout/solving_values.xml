@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:id="@+id/cell_white"
+          android:id="@+id/solve_cell"
           android:height="40dp"
           android:width="36dp"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:textAlignment="center"
-          android:onClick="clickCell"
+          android:onClick="fillCell"
           android:layout_margin="2dp"
-          android:layout_marginLeft="1dp"
-          android:layout_marginRight="1dp"/>
+          android:layout_marginLeft="2dp"
+          android:layout_marginRight="2dp"/>

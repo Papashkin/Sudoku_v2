@@ -16,12 +16,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
         val startBtn:Button = findViewById(R.id.startBtn)
         val loadBtn:Button = findViewById(R.id.loadBtn)
+        val exitBtn:Button = findViewById(R.id.exitBtn)
 
         startBtn.setOnClickListener{
             newGame()
         }
         loadBtn.setOnClickListener{
             loadGame()
+        }
+        exitBtn.setOnClickListener {
+            exitGame()
         }
     }
 
@@ -53,6 +57,12 @@ class MainActivity : AppCompatActivity() {
         (Toast.makeText(this, ("Выбран "+levelsList[value].toUpperCase()+" уровень"), Toast.LENGTH_SHORT)).show()
         val toSecondScr = Intent(this, SecondActivity::class.java)
         toSecondScr.putExtra(SecondActivity.LEVEL_COUNT, value)
+        finish()
         startActivity(toSecondScr)
+    }
+
+    private fun exitGame(){
+        finish()
+        System.exit(0)
     }
 }

@@ -183,7 +183,7 @@ class Sudoku(rows: Int, cols: Int) {
     private fun cleanCells(lvl: Int) {
         var cellValue: IntArray
         var i = Math.pow(boardSize.toDouble(), 2.0).toInt()
-        var filledCells = when (lvl){
+        val filledCells = when (lvl){
             0 -> (4 * Math.random()).toInt() + 30
             1 -> (4 * Math.random()).toInt() + 25
             else -> (4 * Math.random()).toInt() + 21
@@ -254,7 +254,7 @@ class Sudoku(rows: Int, cols: Int) {
     }
 
     // check the solution of the sudoku (must be one solution)
-    private fun isUniqueSolve(cell: IntArray): Boolean {
+    fun isUniqueSolve(cell: IntArray): Boolean {
         var aVal: Int
         val row = cell[0]
         val col = cell[1]
@@ -287,7 +287,7 @@ class Sudoku(rows: Int, cols: Int) {
         return true
     }
 
-    private fun getAreaIndex(row: Int, col: Int): IntArray {
+    fun getAreaIndex(row: Int, col: Int): IntArray {
         val area = IntArray(2)
         val areaIndex = intArrayOf(0, 0, 0, 1, 1, 1, 2, 2, 2)
         area[0] = areaIndex[row]
