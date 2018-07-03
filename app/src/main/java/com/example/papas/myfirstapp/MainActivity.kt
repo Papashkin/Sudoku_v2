@@ -54,7 +54,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setSecondActivity(value: Int ){
-        (Toast.makeText(this, ("Выбран "+levelsList[value].toUpperCase()+" уровень"), Toast.LENGTH_SHORT)).show()
+        val msg = getString(R.string.level_msg, levelsList[value].toUpperCase())
+        (Toast.makeText(this, msg, Toast.LENGTH_SHORT)).show()
         val toSecondScr = Intent(this, SecondActivity::class.java)
         toSecondScr.putExtra(SecondActivity.LEVEL_COUNT, value)
         finish()

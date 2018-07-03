@@ -6,7 +6,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".SecondActivity"
-        android:id="@+id/secondDisplay">
+        android:id="@+id/secondDisplay"
+        android:background="#ffffff">
     <TableRow
             android:id="@+id/solvingRow"
             android:layout_width="wrap_content"
@@ -17,17 +18,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="64dp"/>
-    <Button
+            android:layout_marginBottom="110dp"/>
+    <ImageButton
             android:id="@+id/CleanBtn"
-            android:text="@string/cleanBtn"
+            android:src="@drawable/cancel_btn"
+            android:contentDescription="@string/cleanBtn"
+            android:background="#ffffff"
             android:onClick="cleanCell"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="256dp" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="8dp" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp"/>
+            android:visibility="invisible"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"/>
     <TableLayout
             android:id="@+id/tableLayout"
             android:layout_width="wrap_content"

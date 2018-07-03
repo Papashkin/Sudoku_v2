@@ -6,4 +6,6 @@
     <string name="cleanBtn">Очистить</string>
     <string name="exitBtn">Выход</string>
     <string name="game">Судоку - %s уровень</string>
+    <string name="helper">Подсказки</string>
+    <string name="level_msg">Выбран %s уровень</string>
 </resources>

@@ -8,7 +8,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.TableLayout
+import android.widget.ImageButton
 import android.widget.TableRow
 import android.widget.TextView
 import kotlinx.android.synthetic.main.second_activity.*
@@ -17,6 +17,9 @@ class SecondActivity : AppCompatActivity() {
 
     private var aSudoku: Sudoku = Sudoku(9,9)
     private var posSudoku = Sudoku(9,9)
+    private var tabCellId = 0
+    private var aValue = 0
+    private var isHelp:Boolean = false
     companion object {
         const val LEVEL_COUNT = "level_count"
     }
@@ -37,17 +40,8 @@ class SecondActivity : AppCompatActivity() {
             aRow.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT)
             for (j: Int in 0 until aSudoku.columnLength()) {
                 val aColumn = View.inflate(this, R.layout.cell, null) as TextView
-                aColumn.id = "$i$j".toInt()
-                aColumn.tag = "$i$j".toInt()
-                if (checkCellBackground(aColumn.id)==0) aColumn.setBackgroundResource(R.drawable.sudoku_cell_white)
-                else aColumn.setBackgroundResource(R.drawable.sudoku_cell_blue)
-                aColumn.text = when (aSudoku.getValue(i,j)){
-                        0 -> " "
-                    else -> aSudoku.getValue(i,j).toString()
-                }
-                aColumn.textSize = 32f
-                aColumn.setTextColor(Color.BLACK)
-                aColumn.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                setCellParams(aColumn,i,j)
+                repaintCell(aColumn)
                 aRow.addView(aColumn, j)
             }
             tableLayout.addView(aRow, i)
@@ -70,6 +64,12 @@ class SecondActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.returnBtn -> {
                 returnClick()
+                true
+            }
+            R.id.helper_checkbox ->{
+                item.isChecked = !item.isChecked
+                isHelp = item.isChecked
+                helpMode()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -99,23 +99,6 @@ class SecondActivity : AppCompatActivity() {
         return cellRender(area)
     }
 
-    fun clickCell(view: View){
-        val cell = checkID(view.id)
-        if (posSudoku.getValue(cell[0],cell[1])==0) {
-            if (!view.isActivated){
-                clearSelect()
-                repaint()
-                view.setBackgroundResource(R.drawable.selected_cell)
-                possibleValues(view.id)
-            } else {
-                repaintCell(view)
-                repaint()
-            }
-//            possibleValues(view.id)
-            view.isActivated = !view.isActivated
-        }
-    }
-
     private fun clearSelect() {
         for (i:Int in 0 until aSudoku.rowLength()){
             val aRow = tableLayout.getChildAt(i)
@@ -136,25 +119,50 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun possibleValues(id:Int){
-        val vec = IntArray(3)
-        val cell = checkID(id)
-        vec[0]=cell[0]
-        vec[1]=cell[1]
-        for (i:Int in 1 .. aSudoku.rowLength()){
-            vec[2]=i
-            if (aSudoku.isUniqueSolve(vec)) {
-                val aView = solvingRow.getChildAt(i-1)
-                aView.setBackgroundColor(Color.CYAN)
+        repaint()
+        if (isHelp) {
+            val vec = IntArray(3)
+            val cell = checkID(id)
+            vec[0] = cell[0]
+            vec[1] = cell[1]
+            for (i: Int in 1..aSudoku.rowLength()) {
+                vec[2] = i
+                if (aSudoku.isUniqueSolve(vec)) {
+                    val aView = solvingRow.getChildAt(i - 1)
+                    aView.setBackgroundColor(Color.CYAN)
+                    aView.isActivated = true
+                    aView.isClickable = true
+                }
+            }
+        } else {
+            for (i: Int in 0 until aSudoku.rowLength()) {
+                val aView = solvingRow.getChildAt(i)
+                aView.isActivated = true
+                aView.isClickable = true
             }
         }
     }
 
     private fun repaint(){
         for (i:Int in 0 until solvingRow.childCount){
-                val cell = solvingRow.getChildAt(i)
-                cell.setBackgroundColor(Color.WHITE)
-            }
+            val cell = solvingRow.getChildAt(i)
+            cell.setBackgroundColor(Color.WHITE)
+            cell.isActivated=false
+            cell.isClickable=true
         }
+    }
+
+    private fun setCellParams(view:TextView, i: Int, j: Int) {
+        view.id = "$i$j".toInt()
+        view.tag = "$i$j".toInt()
+        view.text = when (aSudoku.getValue(i,j)){
+            0 -> " "
+            else -> aSudoku.getValue(i,j).toString()
+        }
+        view.textSize = 32f
+        view.setTextColor(Color.BLACK)
+        view.textAlignment = View.TEXT_ALIGNMENT_CENTER
+    }
 
     private fun returnClick(){
         val toMainScr = Intent(this, MainActivity::class.java)
@@ -162,11 +170,61 @@ class SecondActivity : AppCompatActivity() {
         startActivity(toMainScr)
     }
 
-    fun fillCell(view: View){
-
+    private fun helpMode(){
+        if (!isHelp){
+            repaint()
+            if (tabCellId !=0) possibleValues(tabCellId)
+        }else{
+            if (tabCellId !=0) possibleValues(tabCellId)
+        }
     }
 
-    fun cleanCell(view: View){
+    private fun checkCancel(cell: IntArray){
+        val clearBtn = findViewById<ImageButton>(R.id.CleanBtn)
+        if (tabCellId != 0 && aSudoku.getValue(cell[0],cell[1]) != 0) clearBtn.visibility = View.VISIBLE
+        else clearBtn.visibility = View.INVISIBLE
+    }
 
+    fun clickCell(view: View){
+        val cell = checkID(view.id)
+        if (posSudoku.getValue(cell[0],cell[1])==0) {
+            if (!view.isActivated){
+                tabCellId = view.id
+                clearSelect()
+                view.setBackgroundResource(R.drawable.selected_cell)
+                possibleValues(tabCellId)
+            } else {
+                tabCellId=0
+                repaintCell(view)
+                repaint()
+            }
+            view.isActivated = !view.isActivated
+        }
+        checkCancel(cell)
+    }
+
+    fun fillCell(view: View){
+        val aCell = view as TextView
+        val aID = checkID(tabCellId)
+        if (aCell.isActivated){
+            aValue =aCell.text.toString().toInt()
+            aSudoku.setValue(aID[0],aID[1],aValue)
+            val tabCell = findViewById<TextView>(tabCellId)
+            tabCell.text = aCell.text.toString()
+            tabCell.setTextColor(Color.parseColor("#0000FF"))
+            repaint()
+//            possibleValues(tabCellId)
+        }
+        checkCancel(aID)
+    }
+
+    fun cleanCell(view: View) {
+        val aCell = findViewById<TextView>(tabCellId)
+        val cellCoord = checkID(tabCellId)
+        aCell.text = ""
+        aSudoku.setValue(cellCoord[0],cellCoord[1],0)
+        repaint()
+        possibleValues(tabCellId)
+        view.visibility = View.INVISIBLE
     }
 }

@@ -27,7 +27,8 @@ class Sudoku(rows: Int, cols: Int) {
         return mBoard!!.size
     }
 
-    fun generate(lvl:Int){ // Sudoku generator
+    // Sudoku generator
+    fun generate(lvl:Int){
         val columns: Int = boardSize
         val rows: Int = boardSize
         var aRow =  setFirstRow()
@@ -52,11 +53,11 @@ class Sudoku(rows: Int, cols: Int) {
         cleanCells(lvl)
     }
 
-    fun setValue(row: Int, col: Int, value: Any) {
-        mBoard!![row][col] = value as Int
+    fun setValue(row: Int, col: Int, value: Int) {
+        mBoard!![row][col] = value
     }
 
-    fun getValue(row: Int, col: Int): Any {
+    fun getValue(row: Int, col: Int): Int {
         return mBoard!![row][col]
     }
 
