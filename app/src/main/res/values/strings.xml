@@ -1,11 +1,17 @@
 <resources>
     <string name="app_name">Судоку</string>
     <string name="startBtn">Новая игра</string>
-    <string name="loadBtn">Продолжить</string>
-    <string name="returnBtn">Назад</string>
+    <string name="loadBtn">Загрузить игру</string>
+    <string name="deleteBtn">Удалить сохраненную игру</string>
+    <string name="returnBtn">Выход</string>
     <string name="cleanBtn">Очистить</string>
     <string name="exitBtn">Выход</string>
     <string name="game">Судоку - %s уровень</string>
     <string name="helper">Подсказки</string>
+    <string name="again">Начать заново</string>
+    <string name="save">Сохранить</string>
     <string name="level_msg">Выбран %s уровень</string>
+    <string name="congrats">Поздравляем!!!</string>
+    <string name="congrats_msg">Вы решили %s судоку</string>
+    <string name="ok">ОК</string>
 </resources>

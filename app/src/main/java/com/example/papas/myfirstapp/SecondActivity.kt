@@ -3,6 +3,7 @@ package com.example.papas.myfirstapp
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuInflater
@@ -12,6 +13,8 @@ import android.widget.ImageButton
 import android.widget.TableRow
 import android.widget.TextView
 import kotlinx.android.synthetic.main.second_activity.*
+import java.io.*
+import java.util.*
 
 class SecondActivity : AppCompatActivity() {
 
@@ -19,22 +22,43 @@ class SecondActivity : AppCompatActivity() {
     private var posSudoku = Sudoku(9,9)
     private var tabCellId = 0
     private var aValue = 0
-    private var isHelp:Boolean = false
-    companion object {
-        const val LEVEL_COUNT = "level_count"
-    }
+    private var isHelp = false
+    private var level = 0
+    private val fileName = "sudoku.txt"
+    private val levelsList = arrayOf("Легкий", "Средний", "Сложный")
+    private var base= IntArray(81)
+    private var game = IntArray(81)
+//    companion object {
+//        const val LEVEL_COUNT = "levelCount"
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.second_activity)
-        val level = intent.getIntExtra(LEVEL_COUNT, 0)
-        title = getString(R.string.game, levelsList[level])
-        aSudoku.generate(level)
-        for ( i in 0 until aSudoku.rowLength()){
-            for (j in 0 until aSudoku.columnLength()){
-                posSudoku.setValue(i,j,aSudoku.getValue(i,j))
+        val gameType = intent.getStringExtra("gameType")
+        when (gameType){
+            "LOAD" -> {
+                var count = 0
+                loadGame()
+                for ( i in 0 until aSudoku.rowLength()){
+                    for (j in 0 until aSudoku.columnLength()){
+                        posSudoku.setValue(i,j,base[count])
+                        aSudoku.setValue(i,j,game[count])
+                        count++
+                    }
+                }
+            }
+            "NEW" ->{
+                level = intent.getIntExtra("levelCount",0)
+                aSudoku.generate(level)
+                for ( i in 0 until aSudoku.rowLength()){
+                    for (j in 0 until aSudoku.columnLength()){
+                        posSudoku.setValue(i,j,aSudoku.getValue(i,j))
+                    }
+                }
             }
         }
+        title = getString(R.string.game, levelsList[level])
         for (i: Int in 0 until aSudoku.rowLength()) {
             val aRow  = TableRow(this)
             aRow.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT)
@@ -56,7 +80,7 @@ class SecondActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = MenuInflater(this)
-        inflater.inflate(R.menu.menu_main, menu)
+        inflater.inflate(R.menu.menu_second, menu)
         return true
     }
 
@@ -66,10 +90,18 @@ class SecondActivity : AppCompatActivity() {
                 returnClick()
                 true
             }
-            R.id.helper_checkbox ->{
+            R.id.helper_checkbox -> {
                 item.isChecked = !item.isChecked
                 isHelp = item.isChecked
                 helpMode()
+                true
+            }
+            R.id.start_again -> {
+                startAgain()
+                true
+            }
+            R.id.saveGame ->{
+                saveGame()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -82,7 +114,7 @@ class SecondActivity : AppCompatActivity() {
             setOf(1,1)->0
             setOf(0,0)->0
             setOf(2,2)->0
-            else -> 1
+            else->1
         }
     }
 
@@ -121,12 +153,10 @@ class SecondActivity : AppCompatActivity() {
     private fun possibleValues(id:Int){
         repaint()
         if (isHelp) {
-            val vec = IntArray(3)
+            var vec:IntArray
             val cell = checkID(id)
-            vec[0] = cell[0]
-            vec[1] = cell[1]
             for (i: Int in 1..aSudoku.rowLength()) {
-                vec[2] = i
+                vec = intArrayOf(cell[0],cell[1],i)
                 if (aSudoku.isUniqueSolve(vec)) {
                     val aView = solvingRow.getChildAt(i - 1)
                     aView.setBackgroundColor(Color.CYAN)
@@ -159,8 +189,13 @@ class SecondActivity : AppCompatActivity() {
             0 -> " "
             else -> aSudoku.getValue(i,j).toString()
         }
+
+        if (posSudoku.getValue(i,j) != 0){
+            view.setTextColor(Color.BLACK)
+        } else if ((posSudoku.getValue(i,j) == 0)&&(aSudoku.getValue(i,j) != 0)){
+            view.setTextColor(Color.parseColor("#0000FF"))
+        }
         view.textSize = 32f
-        view.setTextColor(Color.BLACK)
         view.textAlignment = View.TEXT_ALIGNMENT_CENTER
     }
 
@@ -171,18 +206,79 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun helpMode(){
-        if (!isHelp){
-            repaint()
-            if (tabCellId !=0) possibleValues(tabCellId)
-        }else{
-            if (tabCellId !=0) possibleValues(tabCellId)
-        }
+        if (!isHelp) repaint()
+        if (tabCellId !=0) possibleValues(tabCellId)
     }
 
     private fun checkCancel(cell: IntArray){
         val clearBtn = findViewById<ImageButton>(R.id.CleanBtn)
         if (tabCellId != 0 && aSudoku.getValue(cell[0],cell[1]) != 0) clearBtn.visibility = View.VISIBLE
         else clearBtn.visibility = View.INVISIBLE
+    }
+
+    private fun checkFullSudoku(step: Int):Boolean{
+        var count = 0
+        for (row in 0 until aSudoku.rowLength()){
+            for (col in 0 until aSudoku.columnLength()){
+                when (step){
+                    1 -> if (0 == aSudoku.getValue(row,col)) count++    // sudoku is completely filled
+                    2 -> if (!aSudoku.isUniqueSolve(intArrayOf(row,col,aSudoku.getValue(row,col)))) count++ // right solve
+                }
+            }
+        }
+        return (count==0)
+    }
+
+    private fun startAgain(){
+        for ( i in 0 until posSudoku.rowLength()){
+            for (j in 0 until posSudoku.columnLength()){
+                if (0 == posSudoku.getValue(i,j)) {
+                    aSudoku.setValue(i,j,posSudoku.getValue(i,j))
+                    val id = findViewById<TextView>("$i$j".toInt())
+                    id.text = ""
+                }
+            }
+        }
+        repaint()
+    }
+
+    private fun saveGame(){
+        try {
+            var str = ""
+            for ( i in 0 until posSudoku.rowLength()){
+                for (j in 0 until posSudoku.columnLength()) str += posSudoku.getValue(i,j).toString()
+            }
+            str += " "
+            for ( i in 0 until aSudoku.rowLength()){
+                for (j in 0 until aSudoku.columnLength()) str += aSudoku.getValue(i,j).toString()
+            }
+            str += " "
+            str += level.toString()
+            str += " "
+            val bw = BufferedWriter(OutputStreamWriter(openFileOutput(fileName, MODE_PRIVATE)))
+            bw.write(str)
+            bw.close()
+        } catch (e: FileNotFoundException) { e.printStackTrace()
+        } catch (e: IOException) { e.printStackTrace() }
+    }
+
+    private fun loadGame(){
+        try {
+            val br = BufferedReader(InputStreamReader(openFileInput(fileName)))
+            val bbb = Scanner(br)
+            val table = bbb.next()
+            val sudoku = bbb.next()
+            level = bbb.next().toInt()
+            br.close()
+            for (i in 0 until posSudoku.getSize()){
+                base[i] = Character.getNumericValue(table[i])
+                game[i] = sudoku[i] - '0'
+            }
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
     fun clickCell(view: View){
@@ -213,9 +309,21 @@ class SecondActivity : AppCompatActivity() {
             tabCell.text = aCell.text.toString()
             tabCell.setTextColor(Color.parseColor("#0000FF"))
             repaint()
-//            possibleValues(tabCellId)
         }
         checkCancel(aID)
+        if (checkFullSudoku(1)){
+            if (checkFullSudoku(2)){
+                val levelMsg = AlertDialog.Builder(this)
+                val dialogView = this.layoutInflater.inflate(R.layout.congrats_dialog, null)
+                levelMsg.setView(dialogView)
+                levelMsg.setTitle(R.string.congrats)
+                levelMsg.setMessage(getString(R.string.congrats_msg,levelsList[level].toLowerCase()))
+                levelMsg.setNegativeButton(R.string.ok) { // "OK"
+                    _, _ -> returnClick()
+                }
+                levelMsg.create().show()
+            }
+        }
     }
 
     fun cleanCell(view: View) {
@@ -225,6 +333,6 @@ class SecondActivity : AppCompatActivity() {
         aSudoku.setValue(cellCoord[0],cellCoord[1],0)
         repaint()
         possibleValues(tabCellId)
-        view.visibility = View.INVISIBLE
+        checkCancel(cellCoord)
     }
 }
