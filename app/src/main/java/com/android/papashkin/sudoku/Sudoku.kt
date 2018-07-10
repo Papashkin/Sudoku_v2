@@ -1,4 +1,4 @@
-package com.example.papas.myfirstapp
+package com.android.papashkin.sudoku
 
 class Sudoku(rows: Int, cols: Int) {
     private var mBoard: Array<IntArray>? = null
@@ -95,13 +95,11 @@ class Sudoku(rows: Int, cols: Int) {
 
     // Method allows to swap areas in horizontal
     private fun swapRowsArea() {
-        var area1 = getRandomNumber(0,3)
-//        var area1 = (3 * Math.random()).toInt()
+        var area1 = getRandomNumber(0,3)    // var area1 = (3 * Math.random()).toInt()
         var area2: Int
         val outSudoku = mBoard!!.clone()
         do
             area2 = getRandomNumber(0,3)
-//            area2 = (3 * Math.random()).toInt()
         while (area2 == area1)
         area1 *= 3
         area2 *= 3
@@ -126,13 +124,10 @@ class Sudoku(rows: Int, cols: Int) {
     private fun swapRows() {
         val area = getRandomNumber(0,3)*boxSize
         val row1 = area + getRandomNumber(0,3)
-//        val area = ((3 * Math.random()).toInt()) * boxSize
-//        val row1 = (3 * Math.random()).toInt() + area
         var row2: Int
         val outSudoku = mBoard!!.clone()
         do {
             row2 = getRandomNumber(0,3) + area
-//            row2 = (3 * Math.random()).toInt() + area
         } while (row1 == row2)
         for (col in mBoard!!.indices) {
             val value = mBoard!![row1][col]
@@ -205,8 +200,7 @@ class Sudoku(rows: Int, cols: Int) {
         var i = 0
         val aVector = IntArray(9)
         do{
-            rndNum = getRandomNumber(1,10)
-//            rndNum = ((Math.random()*9)+1).toInt()    // random value from 1 to 9 including
+            rndNum = getRandomNumber(1,10)   // random value from 1 to 9 including
             for (i in aVector.indices) {
                 if (rndNum == aVector[i]){
                     isUnique = false
@@ -215,8 +209,7 @@ class Sudoku(rows: Int, cols: Int) {
             }
             if (isUnique){
                 do{
-                    position = getRandomNumber(0,9)
-//                    position = ((Math.random()*9)).toInt()  // random position in the row
+                    position = getRandomNumber(0,9)  // random position in the row
                 }
                 while (aVector[position] != 0)
                 aVector[position] = rndNum
@@ -236,8 +229,6 @@ class Sudoku(rows: Int, cols: Int) {
         do {
             row = getRandomNumber(0,9)
             col = getRandomNumber(0,9)
-//            row = (9 * Math.random()).toInt()
-//            col = (9 * Math.random()).toInt()
             value = mBoard!![row][col]
         } while (value == 0)
         cell = intArrayOf(row,col,value)

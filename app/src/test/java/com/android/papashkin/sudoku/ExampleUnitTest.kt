@@ -1,4 +1,4 @@
-package com.example.papas.myfirstapp
+package com.android.papashkin.sudoku
 
 import org.junit.Test
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sudoku</string>
+    <string name="startBtn">New game</string>
+    <string name="loadBtn">Load game</string>
+    <string name="deleteBtn">Delete saved game</string>
+    <string name="returnBtn">Back</string>
+    <string name="cleanBtn">Clean all</string>
+    <string name="exitBtn">Exit</string>
+    <string name="game">Sudoku - %s level</string>
+    <string name="helper">Tips</string>
+    <string name="again">Start again</string>
+    <string name="save">Save</string>
+    <string name="level_msg">%s level is chosen</string>
+    <string name="congrats">Congratulations!!!</string>
+    <string name="congrats_msg">You solved the %s-level sudoku</string>
+    <string name="ok">Ok</string>
+    <string name="easy_level">Easy</string>
+    <string name="medium_level">Medium</string>
+    <string name="hard_level">Hard</string>
+    <string name="dif_level">Difficulty level</string>
+    <string name="level_question">Choose the difficulty level:</string>
+</resources>

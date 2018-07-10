@@ -1,4 +1,4 @@
-package com.example.papas.myfirstapp
+package com.android.papashkin.sudoku
 
 import android.content.Intent
 import android.graphics.Color
@@ -25,40 +25,19 @@ class SecondActivity : AppCompatActivity() {
     private var isHelp = false
     private var level = 0
     private val fileName = "sudoku.txt"
-    private val levelsList = arrayOf("Легкий", "Средний", "Сложный")
+//    private val levelsList = arrayOf(getString(R.string.easy_level),
+//            getString(R.string.medium_level), getString(R.string.hard_level)) // "Легкий", "Средний", "Сложный"
     private var base= IntArray(81)
     private var game = IntArray(81)
-//    companion object {
-//        const val LEVEL_COUNT = "levelCount"
-//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.second_activity)
         val gameType = intent.getStringExtra("gameType")
-        when (gameType){
-            "LOAD" -> {
-                var count = 0
-                loadGame()
-                for ( i in 0 until aSudoku.rowLength()){
-                    for (j in 0 until aSudoku.columnLength()){
-                        posSudoku.setValue(i,j,base[count])
-                        aSudoku.setValue(i,j,game[count])
-                        count++
-                    }
-                }
-            }
-            "NEW" ->{
-                level = intent.getIntExtra("levelCount",0)
-                aSudoku.generate(level)
-                for ( i in 0 until aSudoku.rowLength()){
-                    for (j in 0 until aSudoku.columnLength()){
-                        posSudoku.setValue(i,j,aSudoku.getValue(i,j))
-                    }
-                }
-            }
-        }
-        title = getString(R.string.game, levelsList[level])
+        checkGameType(gameType)
+        val levels = arrayOf(getString(R.string.easy_level),
+                getString(R.string.medium_level), getString(R.string.hard_level)) // "Легкий", "Средний", "Сложный"
+        title = getString(R.string.game, levels[level])
         for (i: Int in 0 until aSudoku.rowLength()) {
             val aRow  = TableRow(this)
             aRow.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT)
@@ -281,6 +260,31 @@ class SecondActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkGameType(type: String){
+        when (type){
+            "LOAD" -> {
+                var count = 0
+                loadGame()
+                for ( i in 0 until aSudoku.rowLength()){
+                    for (j in 0 until aSudoku.columnLength()){
+                        posSudoku.setValue(i,j,base[count])
+                        aSudoku.setValue(i,j,game[count])
+                        count++
+                    }
+                }
+            }
+            "NEW" ->{
+                level = intent.getIntExtra("levelCount",0)
+                aSudoku.generate(level)
+                for ( i in 0 until aSudoku.rowLength()){
+                    for (j in 0 until aSudoku.columnLength()){
+                        posSudoku.setValue(i,j,aSudoku.getValue(i,j))
+                    }
+                }
+            }
+        }
+    }
+
     fun clickCell(view: View){
         val cell = checkID(view.id)
         if (posSudoku.getValue(cell[0],cell[1])==0) {
@@ -300,6 +304,8 @@ class SecondActivity : AppCompatActivity() {
     }
 
     fun fillCell(view: View){
+        val levels = arrayOf(getString(R.string.easy_level),
+                getString(R.string.medium_level), getString(R.string.hard_level)) // "Легкий", "Средний", "Сложный"
         val aCell = view as TextView
         val aID = checkID(tabCellId)
         if (aCell.isActivated){
@@ -317,7 +323,7 @@ class SecondActivity : AppCompatActivity() {
                 val dialogView = this.layoutInflater.inflate(R.layout.congrats_dialog, null)
                 levelMsg.setView(dialogView)
                 levelMsg.setTitle(R.string.congrats)
-                levelMsg.setMessage(getString(R.string.congrats_msg,levelsList[level].toLowerCase()))
+                levelMsg.setMessage(getString(R.string.congrats_msg,levels[level].toLowerCase()))
                 levelMsg.setNegativeButton(R.string.ok) { // "OK"
                     _, _ -> returnClick()
                 }

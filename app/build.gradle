@@ -8,7 +8,7 @@ android {
     compileSdkVersion 26
     buildToolsVersion '27.0.3'
     defaultConfig {
-        applicationId "com.example.papas.myfirstapp"
+        applicationId "com.android.papashkin.sudoku"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
