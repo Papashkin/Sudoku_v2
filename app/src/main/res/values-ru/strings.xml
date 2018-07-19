@@ -20,4 +20,5 @@
     <string name="hard_level">Сложный</string>
     <string name="dif_level">Уровень сложности</string>
     <string name="level_question">Выберите уровень сложности:</string>
+    <string name="rateApp">Оценить приложение</string>
 </resources>

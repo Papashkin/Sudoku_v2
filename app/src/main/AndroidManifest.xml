@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.android.papashkin.sudoku">
+          package="com.papashkin.sudoku">
 
     <application
             android:allowBackup="true"
@@ -10,7 +10,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
-                android:name="com.android.papashkin.sudoku.MainActivity"
+                android:name="com.papashkin.sudoku.MainActivity"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.android.papashkin.sudoku.SecondActivity"
+        <activity android:name="com.papashkin.sudoku.SecondActivity"
                   android:screenOrientation="portrait">
         </activity>
     </application>

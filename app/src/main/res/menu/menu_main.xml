@@ -6,7 +6,12 @@
     <item
             android:icon="@android:drawable/ic_menu_close_clear_cancel"
             android:id="@+id/exitBtn"
-            android:orderInCategory="1"
+            android:orderInCategory="2"
             android:title="@string/exitBtn"
+            app:showAsAction="ifRoom"/>
+    <item
+            android:id="@+id/rateBtn"
+            android:orderInCategory="1"
+            android:title="@string/rateApp"
             app:showAsAction="ifRoom"/>
 </menu>
